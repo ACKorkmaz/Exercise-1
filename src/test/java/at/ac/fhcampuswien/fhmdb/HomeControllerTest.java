@@ -35,70 +35,69 @@ class HomeControllerTest {
         homeController.setMoviesForTesting(testMovies);
 
         // Initialisierung der FXML-Elemente innerhalb von Platform.runLater
-        Platform.runLater(() -> {
-            homeController.setSearchField(new TextField());
-            homeController.setGenreComboBox(new JFXComboBox<>());
-            homeController.setSortBtn(new JFXButton());
-        });
+
+        homeController.setSearchField(new TextField());
+        homeController.setGenreComboBox(new JFXComboBox<>());
+        homeController.setSortBtn(new JFXButton());
+
     }
 
 
     @Test
     void testSortingAscending() {
-        Platform.runLater(() -> {
-            homeController.sortMovies();
-            ObservableList<Movie> sortedMovies = homeController.getObservableMovies();
-            assertTrue(sortedMovies.get(0).getTitle().compareToIgnoreCase(sortedMovies.get(1).getTitle()) <= 0);
-        });
+
+        homeController.sortMovies();
+        ObservableList<Movie> sortedMovies = homeController.getObservableMovies();
+        assertTrue(sortedMovies.get(0).getTitle().compareToIgnoreCase(sortedMovies.get(1).getTitle()) <= 0);
+
     }
 
     @Test
     void testSortingDescending() {
-        Platform.runLater(() -> {
-            homeController.sortMovies();
-            homeController.sortMovies();
-            ObservableList<Movie> sortedMovies = homeController.getObservableMovies();
-            assertTrue(sortedMovies.get(0).getTitle().compareToIgnoreCase(sortedMovies.get(1).getTitle()) >= 0);
-        });
+
+        homeController.sortMovies();
+        homeController.sortMovies();
+        ObservableList<Movie> sortedMovies = homeController.getObservableMovies();
+        assertTrue(sortedMovies.get(0).getTitle().compareToIgnoreCase(sortedMovies.get(1).getTitle()) >= 0);
+
     }
 
     @Test
     void testFilterByGenre() {
-        Platform.runLater(() -> {
-            homeController.genreComboBox.setValue("ACTION");
-            homeController.filterMovies();
-            for (Movie movie : homeController.getObservableMovies()) {
-                assertTrue(movie.getGenres().contains("ACTION"));
-            }
-        });
+
+        homeController.genreComboBox.setValue("ACTION");
+        homeController.filterMovies();
+        for (Movie movie : homeController.getObservableMovies()) {
+            assertTrue(movie.getGenres().contains("ACTION"));
+        }
+
     }
 
     @Test
     void testFilterBySearchQuery() {
-        Platform.runLater(() -> {
-            homeController.searchField.setText("Joker");
-            homeController.filterMovies();
-            assertEquals(1, homeController.getObservableMovies().size());
-            assertEquals("Joker", homeController.getObservableMovies().get(0).getTitle());
-        });
+
+        homeController.searchField.setText("Joker");
+        homeController.filterMovies();
+        assertEquals(1, homeController.getObservableMovies().size());
+        assertEquals("Joker", homeController.getObservableMovies().get(0).getTitle());
+
     }
 
     @Test
     void testFilterByEmptySearchQuery() {
-        Platform.runLater(() -> {
-            homeController.searchField.setText("");
-            homeController.genreComboBox.setValue("All");
-            homeController.filterMovies();
-            assertEquals(4, homeController.getObservableMovies().size());
-        });
+
+        homeController.searchField.setText("");
+        homeController.genreComboBox.setValue("All");
+        homeController.filterMovies();
+        assertEquals(4, homeController.getObservableMovies().size());
+
     }
 
     @Test
     void testFilterByNonExistentMovie() {
-        Platform.runLater(() -> {
-            homeController.searchField.setText("NonExistentMovie");
-            homeController.filterMovies();
-            assertEquals(0, homeController.getObservableMovies().size());
-        });
+
+        homeController.searchField.setText("NonExistentMovie");
+        homeController.filterMovies();
+        assertEquals(0, homeController.getObservableMovies().size());
     }
 }
