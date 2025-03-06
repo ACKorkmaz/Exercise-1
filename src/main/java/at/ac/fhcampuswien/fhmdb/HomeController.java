@@ -12,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -20,22 +21,17 @@ import java.util.stream.Collectors;
 public class HomeController implements Initializable {
     @FXML
     public JFXButton searchBtn;
-
     @FXML
     public TextField searchField;
-
     @FXML
     public JFXListView<Movie> movieListView;
-
     @FXML
     public JFXComboBox<String> genreComboBox;
-
     @FXML
     public JFXButton sortBtn;
 
-    public List<Movie> allMovies = Movie.initializeMovies();
+    private final List<Movie> allMovies = new ArrayList<>(Movie.initializeMovies());
     private final ObservableList<Movie> observableMovies = FXCollections.observableArrayList();
-    //neu
     private boolean sortAscending = true;
 
     @Override
@@ -44,9 +40,10 @@ public class HomeController implements Initializable {
         movieListView.setItems(observableMovies);
         movieListView.setCellFactory(movieListView -> new MovieCell());
 
-        //neu
         genreComboBox.getItems().addAll(
-                "All", "ACTION", "ADVENTURE", "ANIMATION", "BIOGRAPHY", "COMEDY", "CRIME", "DRAMA", "DOCUMENTARY", "FAMILY", "FANTASY", "HISTORY", "HORROR", "MUSICAL", "MYSTERY", "ROMANCE", "SCIENCE_FICTION", "SPORT", "THRILLER", "WAR", "WESTERN"
+                "All", "ACTION", "ADVENTURE", "ANIMATION", "BIOGRAPHY", "COMEDY", "CRIME", "DRAMA",
+                "DOCUMENTARY", "FAMILY", "FANTASY", "HISTORY", "HORROR", "MUSICAL", "MYSTERY",
+                "ROMANCE", "SCIENCE_FICTION", "SPORT", "THRILLER", "WAR", "WESTERN"
         );
         genreComboBox.setValue("All");
 
@@ -54,42 +51,67 @@ public class HomeController implements Initializable {
         searchBtn.setOnAction(actionEvent -> filterMovies());
     }
 
-    private void sortMovies() {
+    public void sortMovies() {
         if (sortAscending) {
             observableMovies.sort(Comparator.comparing(Movie::getTitle));
-            sortBtn.setText("Sortieren(A-Z)");
+            if (sortBtn != null) sortBtn.setText("Sortieren (Z-A)");
         } else {
             observableMovies.sort(Comparator.comparing(Movie::getTitle).reversed());
-            sortBtn.setText("Sortieren (Z-A)");
+            if (sortBtn != null) sortBtn.setText("Sortieren (A-Z)");
         }
         sortAscending = !sortAscending;
     }
 
-    //neu
-    private void filterMovies() {
-        // Suche Kleinbuchstaben machen
-        String query = searchField.getText().toLowerCase();
+    public ObservableList<Movie> getObservableMovies() {
+        return observableMovies;
+    }
 
-        // Gerne auswahl
-        String selectedGenre = genreComboBox.getValue();
-
-        // filter
-        List<Movie> filteredMovies = allMovies.stream()
-                // filtert nach query faks falsch -> alle filme
-                .filter(movie -> query.isEmpty() || movie.getTitle().toLowerCase().contains(query))
-                // Filtert nach genre fals alle -> alle filme
-                .filter(movie -> selectedGenre.equals("All") || movie.getGenres().contains(selectedGenre))
-                .collect(Collectors.toList());
-
-        // sotiert von a-z oder z-a
-        if (sortAscending) {
-            filteredMovies.sort(Comparator.comparing(Movie::getTitle)); // Aufsteigend sortieren
-        } else {
-            filteredMovies.sort(Comparator.comparing(Movie::getTitle).reversed()); // Absteigend sortieren
+    public void filterMovies() {
+        if (searchField == null || genreComboBox == null) {
+            return;
         }
 
-        // Aktualisierte gefilterte Liste in der ObservableList speichern
+        final String query = searchField.getText().toLowerCase();
+        final String genreFilter;
+        if (genreComboBox.getValue() != null) {
+            genreFilter = genreComboBox.getValue();
+        } else {
+            genreFilter = "All";
+        }
+
+
+        List<Movie> filteredMovies = allMovies.stream()
+                .filter(movie -> query.isEmpty() ||
+                        movie.getTitle().toLowerCase().contains(query) ||
+                        movie.getDescription().toLowerCase().contains(query))
+                .filter(movie -> genreFilter.equals("All") || movie.getGenres().contains(genreFilter))
+                .collect(Collectors.toList());
+
+        if (sortAscending) {
+            filteredMovies.sort(Comparator.comparing(Movie::getTitle));
+        } else {
+            filteredMovies.sort(Comparator.comparing(Movie::getTitle).reversed());
+        }
+
         observableMovies.setAll(filteredMovies);
     }
 
+    // SETTER für TESTS
+    public void setSearchField(TextField searchField) {
+        this.searchField = searchField;
+    }
+
+    public void setGenreComboBox(JFXComboBox<String> genreComboBox) {
+        this.genreComboBox = genreComboBox;
+    }
+
+    public void setSortBtn(JFXButton sortBtn) {
+        this.sortBtn = sortBtn;
+    }
+
+    public void setMoviesForTesting(List<Movie> movies) {
+        allMovies.clear();
+        allMovies.addAll(movies);
+        observableMovies.setAll(movies);
+    }
 }

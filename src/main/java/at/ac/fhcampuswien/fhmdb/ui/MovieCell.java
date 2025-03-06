@@ -22,27 +22,38 @@ public class MovieCell extends ListCell<Movie> {
             setText(null);
             setGraphic(null);
         } else {
-            this.getStyleClass().add("movie-cell");
+            if (!this.getStyleClass().contains("movie-cell")) {
+                this.getStyleClass().add("movie-cell");
+            }
+
             title.setText(movie.getTitle());
-            detail.setText(
-                    movie.getDescription() != null
-                            ? movie.getDescription()
-                            : "No description available"
-            );
+            if (movie.getDescription() != null) {
+                detail.setText(movie.getDescription());
+            } else {
+                detail.setText("No description available");
+            }
 
 
-            // color scheme
+            // Farbgebung
             title.getStyleClass().add("text-yellow");
             detail.getStyleClass().add("text-white");
             layout.setBackground(new Background(new BackgroundFill(Color.web("#454545"), null, null)));
 
-            // layout
-            title.fontProperty().set(title.getFont().font(20));
-            detail.setMaxWidth(this.getScene().getWidth() - 30);
+            // Layout-Anpassungen
+            title.setStyle("-fx-font-size: 20px;");
+
+            double maxWidth;
+            if (this.getScene() != null && this.getScene().getWidth() > 30) {
+                maxWidth = this.getScene().getWidth() - 30;
+            } else {
+                maxWidth = 300;
+            }
+            detail.setMaxWidth(maxWidth);
             detail.setWrapText(true);
             layout.setPadding(new Insets(10));
-            layout.spacingProperty().set(10);
-            layout.alignmentProperty().set(javafx.geometry.Pos.CENTER_LEFT);
+            layout.setSpacing(10);
+            layout.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
             setGraphic(layout);
         }
     }
