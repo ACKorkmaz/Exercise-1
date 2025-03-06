@@ -43,7 +43,7 @@ public class HomeController implements Initializable {
         genreComboBox.getItems().addAll(
                 "All", "ACTION", "ADVENTURE", "ANIMATION", "BIOGRAPHY", "COMEDY", "CRIME", "DRAMA",
                 "DOCUMENTARY", "FAMILY", "FANTASY", "HISTORY", "HORROR", "MUSICAL", "MYSTERY",
-                "ROMANCE", "SCIENCE_FICTION", "SPORT", "THRILLER", "WAR", "WESTERN"
+                "ROMANCE", "SCIENCE FICTION", "SPORT", "THRILLER", "WAR", "WESTERN"
         );
         genreComboBox.setValue("All");
 
